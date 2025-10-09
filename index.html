@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শিক্ষার্থীর মাসিক প্ল্যানার ও Admin প্যানেল</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Nikosh', 'SolaimanLipi', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* হোম পেজ ডিজাইন উন্নত করা হয়েছে */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+            overflow: hidden;
+            animation: fadeIn 1s ease-out; 
+            min-height: 80vh; /* Ensures a good height on all views */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a3c7c 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid #ffcc00; 
+        }
+        
+        h1 {
+            font-size: 36px; 
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 18px; 
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+        
+        .motivation {
+            font-style: italic;
+            margin-top: 10px;
+            color: #a8d8ff;
+        }
+        
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .month-year-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        select, button {
+            padding: 8px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #adminPanelBtn {
+            background: #e67e22;
+        }
+        #adminPanelBtn:hover {
+            background: #d35400;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Main Tab Content Styling - Simulating Pages */
+        .tab-content {
+            display: none; /* All pages are hidden by default */
+            min-height: 60vh;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block; /* Only the active page is visible */
+        }
+
+        /* Nav Tab Bar */
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            overflow-x: auto; 
+            background: #f1f1f1;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            white-space: nowrap;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            font-weight: bold;
+            color: #3498db;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tab[data-tab="admin"].active {
+            color: #e67e22; 
+        }
+
+        .tab[data-tab="general-knowledge"].active {
+             color: #9b59b6;
+        }
+
+        /* Existing Planner Table Styling (Remains same) */
+        .planner-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        /* ... other planner, notes, stats styles ... */
+        
+        .time-column {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            width: 150px;
+        }
+        
+        .activity-column {
+            width: 200px;
+        }
+        
+        .goal-column {
+            width: 180px;
+        }
+        
+        .days-column {
+            width: 70px;
+        }
+        
+        .completed {
+            background-color: #d4edda;
+        }
+        
+        .missed {
+            background-color: #f8d7da;
+        }
+        
+        .weekend {
+            background-color: #fff3cd;
+        }
+        
+        input[type="checkbox"] {
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .notes-section {
+            padding: 20px 0 0 0;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .section-title {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: #e9ecef;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .weekly-goals, .general-knowledge-section, .test-section {
+            padding: 0; /* Already inside .tab-content padding */
+        }
+        
+        .goal-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+        }
+        
+        .goal-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .test-question {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2e7d32;
+        }
+        
+        /* Admin Panel Specific Styling */
+        .admin-section input[type="text"], 
+        .admin-section input[type="number"], 
+        .admin-section textarea,
+        .admin-login input[type="text"],
+        .admin-login input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .admin-section .admin-form-group {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            background: #f9f9f9;
+        }
+
+        .admin-login {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f9f9f9;
+            text-align: center;
+        }
+
+        .current-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .item-text {
+            flex-grow: 1;
+            margin-right: 10px;
+            font-size: 14px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        
+        .quiz-config {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .quiz-config > div {
+            flex: 1; 
+            min-width: 150px;
+        }
+        .quiz-config input {
+            text-align: center;
+        }
+
+        /* --- Responsive Design (Mobile First) --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .tab-container {
+                padding-bottom: 5px;
+            }
+            
+            /* Planner table specific for mobile */
+            .planner-container {
+                padding: 10px 0;
+            }
+            table {
+                min-width: 600px;
+            }
+            th, td {
+                padding: 8px 5px;
+                font-size: 12px;
+            }
+
+            .current-list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .item-text {
+                width: 100%;
+                white-space: normal;
+                overflow: visible;
+            }
+            .btn-delete {
+                width: 100%;
+                font-size: 14px;
+            }
+            
+            .notes-section, .stats {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+        }
+
+        /* --- Quiz Specific Colors --- */
+        .general-knowledge-section .section-title {
+            border-bottom: 2px solid #9b59b6;
+            color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>শিক্ষার্থীর মাসিক প্ল্যানার</h1>
+            <p class="subtitle">ভাষা শেখার রুটিন ও অগ্রগতি ট্র্যাকার</p>
+            <p class="motivation">"জ্ঞান অর্জন করা প্রতিটি মানুষের কর্তব্য" - হাদিস</p>
+        </header>
+        
+        <div class="control-panel">
+            <div class="month-year-selector">
+                <select id="monthSelect">
+                    <option value="0">জানুয়ারি</option>
+                    <option value="1">ফেব্রুয়ারি</option>
+                    <option value="2">মার্চ</option>
+                    <option value="3">এপ্রিল</option>
+                    <option value="4">মে</option>
+                    <option value="5">জুন</option>
+                    <option value="6">জুলাই</option>
+                    <option value="7">আগস্ট</option>
+                    <option value="8">সেপ্টেম্বর</option>
+                    <option value="9">অক্টোবর</option>
+                    <option value="10">নভেম্বর</option>
+                    <option value="11">ডিসেম্বর</option>
+                </select>
+                
+                <select id="yearSelect">
+                    </select>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="resetBtn">রিসেট করুন</button>
+                <button id="weeklyTestBtn">সাপ্তাহিক পরীক্ষা</button>
+                <button id="adminPanelBtn">Admin প্যানেল</button>
+                <button id="printBtn">প্রিন্ট করুন</button>
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="planner">মাসিক প্ল্যানার</div>
+            <div class="tab" data-tab="weekly-goals">সাপ্তাহিক লক্ষ্য</div>
+            <div class="tab" data-tab="weekly-test">সাপ্তাহিক পরীক্ষা</div>
+            <div class="tab" data-tab="general-knowledge">সাধারণ জ্ঞান</div> 
+            <div class="tab" data-tab="admin">Admin প্যানেল</div>
+        </div>
+        
+        <div class="tab-content active" id="planner-tab">
+            <div class="planner-container">
+                <table id="plannerTable">
+                    <thead>
+                        <tr>
+                            <th class="time-column">সময়সূচী</th>
+                            <th class="activity-column">কার্যক্রম</th>
+                            <th class="goal-column">লক্ষ্য</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="30" style="text-align: center; color: #777;">Admin প্যানেল থেকে রুটিন যোগ করুন।</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="notes-section">
+                <h3 class="section-title">সাপ্তাহিক লক্ষ্য ও রিভিউ</h3>
+                <textarea id="weeklyNotes" placeholder="এই সপ্তাহের লক্ষ্য, অর্জন, সমস্যা এবং পরবর্তী সপ্তাহের পরিকল্পনা লিখুন..."></textarea>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">সম্পন্ন কাজ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">সমাপ্তির হার</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="daysLeft">0</div>
+                    <div class="stat-label">বাকি দিন</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="weekly-goals-tab">
+            <div class="weekly-goals">
+                <h3 class="section-title">সাপ্তাহিক ভাষা শেখার লক্ষ্য</h3>
+                <div id="goalsList">
+                    <p style="text-align: center; color: #777;">Admin প্যানেল থেকে লক্ষ্য যুক্ত করুন।</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="weekly-test-tab">
+            <div class="test-section">
+                <h3 class="section-title" style="border-bottom-color: #e74c3c; color: #c0392b;">সাপ্তাহিক ভাষা পরীক্ষা</h3>
+                <p>এই সপ্তাহে যা শিখেছেন তার উপর ভিত্তি করে একটি ছোট পরীক্ষা দিন।</p>
+                <div id="weekly-test-info" style="margin-bottom: 15px; font-weight: bold; color: #333;">
+                    মোট নম্বর: <span id="displayWeeklyTotalMarks">0</span> | মোট প্রশ্ন: <span id="displayWeeklyTotalQuestions">0</span>
+                </div>
+                <form id="weekly-test-form">
+                    <div id="weeklyQuestionsContainer">
+                         <p style="text-align: center; color: #777;">Admin প্যানেল থেকে প্রশ্ন যুক্ত করুন।</p>
+                    </div>
+                    <button type="submit" id="submitWeeklyTestBtn" style="margin-top: 20px; background: #2ecc71; display: none;">পরীক্ষা জমা দিন</button>
+                </form>
+
+                <div class="test-results" id="weeklyTestResults">
+                    <h4 class="result-title">পরীক্ষার ফলাফল</h4>
+                    <p id="weeklyScoreDisplay"></p>
+                    <p id="weeklyFeedback"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="general-knowledge-tab">
+            <div class="general-knowledge-section test-section">
+                <h3 class="section-title">সাধারণ জ্ঞান পরীক্ষা (MCQ)</h3>
+                <p>নিজের সাধারণ জ্ঞানের দক্ষতা পরীক্ষা করুন।</p>
+                <div id="gk-test-info" style="margin-bottom: 15px; font-weight: bold; color: #333;">
+                    মোট নম্বর: <span id="displayGKTotalMarks">0</span> | মোট প্রশ্ন: <span id="displayGKTotalQuestions">0</span>
+                </div>
+                <form id="gk-test-form">
+                    <div id="gkQuestionsContainer">
+                         <p style="text-align: center; color: #777;">Admin প্যানেল থেকে সাধারণ জ্ঞানের প্রশ্ন যুক্ত করুন।</p>
+                    </div>
+                    <button type="submit" id="submitGKTestBtn" style="margin-top: 20px; background: #9b59b6; display: none;">পরীক্ষা জমা দিন</button>
+                </form>
+
+                <div class="test-results" id="gkTestResults">
+                    <h4 class="result-title">পরীক্ষার ফলাফল</h4>
+                    <p id="gkScoreDisplay"></p>
+                    <p id="gkFeedback"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="admin-tab">
+            <div class="admin-login" id="adminLoginForm">
+                <h3 style="color: #e67e22; margin-bottom: 20px;">Admin প্যানেলে লগইন করুন</h3>
+                <label for="adminId" style="display: block; text-align: left; font-weight: bold;">ইউজার আইডি</label>
+                <input type="text" id="adminId" required placeholder="ইউজার আইডি (AR)">
+                
+                <label for="adminPassword" style="display: block; text-align: left; font-weight: bold;">পাসওয়ার্ড</label>
+                <input type="password" id="adminPassword" required placeholder="পাসওয়ার্ড (127627)">
+                
+                <button type="button" id="loginBtn" style="background: #e67e22;">লগইন</button>
+            </div>
+            
+            <div class="admin-section" id="adminContent" style="display: none;">
+                <h2 class="section-title" style="margin-bottom: 30px; border-bottom-color: #e67e22; color: #d35400;">Admin প্যানেল: নিয়ন্ত্রণ ও পরিবর্তন</h2>
+
+                <div class="admin-form-group">
+                    <h3 style="color: #4a90e2; margin-bottom: 15px;">মাসিক প্ল্যানার রুটিন নিয়ন্ত্রণ</h3>
+                    <form id="addRoutineForm">
+                        <label for="routineTime" style="display: block; margin-top: 10px; font-weight: bold;">সময়সূচি</label>
+                        <input type="text" id="routineTime" placeholder="যেমন: সকাল ৬:০০ - ৬:৩০" required>
+                        
+                        <label for="routineActivity" style="display: block; margin-top: 10px; font-weight: bold;">কার্যক্রম</label>
+                        <input type="text" id="routineActivity" placeholder="যেমন: ঘুম থেকে ওঠা, ফ্রেশ হওয়া" required>
+
+                        <label for="routineGoal" style="display: block; margin-top: 10px; font-weight: bold;">লক্ষ্য</label>
+                        <input type="text" id="routineGoal" placeholder="যেমন: সতেজ হওয়া" required>
+                        
+                        <button type="submit" style="background: #4a90e2;">নতুন রুটিন যোগ করুন</button>
+                        <button type="button" id="clearRoutinesBtn" style="background: #95a5a6; margin-left: 10px;">সমস্ত রুটিন মুছে ফেলুন</button>
+                    </form>
+                    
+                    <h4 style="margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">বর্তমান রুটিন তালিকা</h4>
+                    <div id="currentRoutinesList" style="max-height: 300px; overflow-y: auto;">
+                        </div>
+                </div>
+
+
+                <div class="admin-form-group">
+                    <h3 style="color: #3498db; margin-bottom: 15px;">সাপ্তাহিক লক্ষ্য যুক্ত করুন</h3>
+                    <form id="addGoalForm">
+                        <label for="goalTitle" style="display: block; margin-top: 10px; font-weight: bold;">লক্ষ্যের শিরোনাম</label>
+                        <input type="text" id="goalTitle" required>
+
+                        <label for="goalDescription" style="display: block; margin-top: 10px; font-weight: bold;">লক্ষ্যের বিবরণ</label>
+                        <textarea id="goalDescription" rows="4" required></textarea>
+                        
+                        <button type="submit" style="background: #2ecc71;">নতুন লক্ষ্য যোগ করুন</button>
+                        <button type="button" id="clearGoalsBtn" style="background: #95a5a6; margin-left: 10px;">সমস্ত লক্ষ্য মুছে ফেলুন</button>
+                    </form>
+                    <h4 style="margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">বর্তমান লক্ষ্যের তালিকা</h4>
+                    <div id="currentGoalsList" style="max-height: 200px; overflow-y: auto;">
+                        </div>
+                </div>
+                
+                <div class="admin-form-group">
+                    <h3 style="color: #e74c3c; margin-bottom: 15px;">সাপ্তাহিক পরীক্ষা প্রশ্ন নিয়ন্ত্রণ ও যুক্ত করুন</h3>
+                    
+                    <div class="quiz-config">
+                        <div>
+                            <label for="weeklyTestTotalMarks" style="display: block; font-weight: bold;">১. পরীক্ষার মোট নম্বর সেট করুন</label>
+                            <input type="number" id="weeklyTestTotalMarks" value="10" required>
+                        </div>
+                        <div>
+                            <label for="weeklyTestTotalQuestions" style="display: block; font-weight: bold;">২. বর্তমান প্রশ্ন সংখ্যা (স্বয়ংক্রিয়)</label>
+                            <input type="number" id="weeklyTestTotalQuestions" value="0" readonly style="background: #eee;">
+                        </div>
+                    </div>
+                    <p style="color: #e74c3c; margin-bottom: 20px; font-size: 14px;">**পরীক্ষায় মোট ${'<span style="font-weight: bold;">বর্তমান প্রশ্ন সংখ্যা</span>'} থাকবে।</p>
+
+                    <form id="addWeeklyQuestionForm">
+                        <label for="weeklyQuestionText" style="display: block; margin-top: 10px; font-weight: bold;">প্রশ্নটি লিখুন</label>
+                        <textarea id="weeklyQuestionText" rows="2" required></textarea>
+                        <label style="display: block; margin-top: 10px; font-weight: bold;">অপশন এবং সঠিক উত্তর</label>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="weeklyCorrectAnswer" value="a" required> <label>A</label>
+                            <input type="text" name="weeklyOptionA" placeholder="অপশন A" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="weeklyCorrectAnswer" value="b"> <label>B</label>
+                            <input type="text" name="weeklyOptionB" placeholder="অপশন B" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="weeklyCorrectAnswer" value="c"> <label>C</label>
+                            <input type="text" name="weeklyOptionC" placeholder="অপশন C" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="weeklyCorrectAnswer" value="d"> <label>D</label>
+                            <input type="text" name="weeklyOptionD" placeholder="অপশন D" required style="flex-grow: 1;">
+                        </div>
+                        <button type="submit" style="background: #e74c3c;">প্রশ্ন যোগ করুন</button>
+                        <button type="button" id="clearWeeklyQuestionsBtn" style="background: #95a5a6; margin-left: 10px;">সমস্ত প্রশ্ন মুছে ফেলুন</button>
+                    </form>
+                    <h4 style="margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">বর্তমান প্রশ্নের তালিকা</h4>
+                    <div id="currentWeeklyQuestionsList" style="max-height: 200px; overflow-y: auto;">
+                        </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <h3 style="color: #9b59b6; margin-bottom: 15px;">সাধারণ জ্ঞান প্রশ্ন নিয়ন্ত্রণ ও যুক্ত করুন</h3>
+                    <div class="quiz-config">
+                        <div>
+                            <label for="gkTestTotalMarks" style="display: block; font-weight: bold;">১. পরীক্ষার মোট নম্বর সেট করুন</label>
+                            <input type="number" id="gkTestTotalMarks" value="10" required>
+                        </div>
+                        <div>
+                            <label for="gkTestTotalQuestions" style="display: block; font-weight: bold;">২. বর্তমান প্রশ্ন সংখ্যা (স্বয়ংক্রিয়)</label>
+                            <input type="number" id="gkTestTotalQuestions" value="0" readonly style="background: #eee;">
+                        </div>
+                    </div>
+                    <p style="color: #9b59b6; margin-bottom: 20px; font-size: 14px;">**পরীক্ষায় মোট ${'<span style="font-weight: bold;">বর্তমান প্রশ্ন সংখ্যা</span>'} থাকবে।</p>
+
+                    <form id="addGKQuestionForm">
+                        <label for="gkQuestionText" style="display: block; margin-top: 10px; font-weight: bold;">প্রশ্নটি লিখুন</label>
+                        <textarea id="gkQuestionText" rows="2" required></textarea>
+                        <label style="display: block; margin-top: 10px; font-weight: bold;">অপশন এবং সঠিক উত্তর</label>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="gkCorrectAnswer" value="a" required> <label>A</label>
+                            <input type="text" name="gkOptionA" placeholder="অপশন A" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="gkCorrectAnswer" value="b"> <label>B</label>
+                            <input type="text" name="gkOptionB" placeholder="অপশন B" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="gkCorrectAnswer" value="c"> <label>C</label>
+                            <input type="text" name="gkOptionC" placeholder="অপশন C" required style="flex-grow: 1;">
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="radio" name="gkCorrectAnswer" value="d"> <label>D</label>
+                            <input type="text" name="gkOptionD" placeholder="অপশন D" required style="flex-grow: 1;">
+                        </div>
+                        <button type="submit" style="background: #9b59b6;">প্রশ্ন যোগ করুন</button>
+                        <button type="button" id="clearGKQuestionsBtn" style="background: #95a5a6; margin-left: 10px;">সমস্ত প্রশ্ন মুছে ফেলুন</button>
+                    </form>
+                    <h4 style="margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">বর্তমান প্রশ্নের তালিকা</h4>
+                    <div id="currentGKQuestionsList" style="max-height: 200px; overflow-y: auto;">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Admin Credentials ---
+        const ADMIN_ID = "AR";
+        const ADMIN_PASS = "127627";
+        
+        // --- Data Structures (Local Storage) ---
+        const defaultRoutineData = [
+            { time: "সকাল ৬:০০ - ৬:৩০", activity: "ঘুম থেকে ওঠা, ফ্রেশ হওয়া, হালকা নাস্তা", goal: "সতেজ হওয়া" },
+            { time: "৬:৩০ - ৭:১৫", activity: "চীনা ভাষা: নতুন শব্দ / বেসিক বাক্য", goal: "১০-১৫টি নতুন শব্দ শেখা" },
+            { time: "৭:১৫ - ৭:৪৫", activity: "ইংরেজি ভাষা: Vocabulary বা Grammar", goal: "৫-১০টি নতুন শব্দ বা একটি Grammar Rule" },
+            { time: "৮:০০ - ৭:০০", activity: "গার্মেন্টস কাজ", goal: "কাজের ফাঁকে ভাষা চর্চা" },
+            { time: "১০:৩০", activity: "ঘুম", goal: "ভালো ঘুম জন্য মেমোরি শক্তি" }
+        ];
+
+        let routineData = JSON.parse(localStorage.getItem('routineData')) || defaultRoutineData;
+        let goalsData = JSON.parse(localStorage.getItem('goalsData')) || [];
+        
+        let weeklyQuizData = JSON.parse(localStorage.getItem('weeklyQuizData')) || { totalMarks: 10, questions: [] };
+        let gkQuizData = JSON.parse(localStorage.getItem('gkQuizData')) || { totalMarks: 10, questions: [] };
+        
+        // --- Utility Functions for Data Storage ---
+        function saveRoutineData() { localStorage.setItem('routineData', JSON.stringify(routineData)); }
+        function saveGoalsData() { localStorage.setItem('goalsData', JSON.stringify(goalsData)); }
+        function saveWeeklyQuizData() { localStorage.setItem('weeklyQuizData', JSON.stringify(weeklyQuizData)); }
+        function saveGKQuizData() { localStorage.setItem('gkQuizData', JSON.stringify(gkQuizData)); }
+        
+        // --- Global Functions (DOMContentLoaded) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePlanner();
+            
+            // Planner Controls
+            document.getElementById('monthSelect').addEventListener('change', updatePlanner);
+            document.getElementById('yearSelect').addEventListener('change', updatePlanner);
+            document.getElementById('resetBtn').addEventListener('click', resetPlanner);
+            document.getElementById('printBtn').addEventListener('click', printPlanner);
+            
+            // Weekly Test button now just switches the view
+            document.getElementById('weeklyTestBtn').addEventListener('click', function() {
+                setActiveTab('weekly-test');
+            });
+
+            // Tab functionality - SPA-like navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+            
+            // Notes
+            document.getElementById('weeklyNotes').addEventListener('change', saveNotes);
+            
+            // Admin Panel Event Listeners
+            document.getElementById('adminPanelBtn').addEventListener('click', function() {
+                setActiveTab('admin');
+            });
+            document.getElementById('loginBtn').addEventListener('click', adminLogin);
+
+            // Routine Admin
+            document.getElementById('addRoutineForm').addEventListener('submit', addRoutine);
+            document.getElementById('clearRoutinesBtn').addEventListener('click', clearRoutines);
+
+            // Goals Admin
+            document.getElementById('addGoalForm').addEventListener('submit', addGoal);
+            document.getElementById('clearGoalsBtn').addEventListener('click', clearGoals);
+
+            // Weekly Test Admin & User
+            document.getElementById('addWeeklyQuestionForm').addEventListener('submit', addWeeklyQuestion);
+            document.getElementById('clearWeeklyQuestionsBtn').addEventListener('click', clearWeeklyQuestions);
+            document.getElementById('weeklyTestTotalMarks').addEventListener('change', updateWeeklyTestMarks);
+            document.getElementById('weekly-test-form').addEventListener('submit', submitWeeklyTest);
+
+            // General Knowledge Admin & User
+            document.getElementById('addGKQuestionForm').addEventListener('submit', addGKQuestion);
+            document.getElementById('clearGKQuestionsBtn').addEventListener('click', clearGKQuestions);
+            document.getElementById('gkTestTotalMarks').addEventListener('change', updateGKTestMarks);
+            document.getElementById('gk-test-form').addEventListener('submit', submitGKTest);
+
+            loadSavedData();
+        });
+
+        // --- SPA Navigation Function ---
+        function setActiveTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const tabElement = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            if (tabElement) tabElement.classList.add('active');
+            
+            const contentElement = document.getElementById(`${tabId}-tab`);
+            if (contentElement) contentElement.classList.add('active');
+
+            // Logic to render content based on the active tab
+            if (tabId === 'planner') {
+                updatePlanner();
+                loadNotes();
+            } else if (tabId === 'weekly-goals') {
+                renderGoals();
+            } else if (tabId === 'weekly-test') {
+                renderWeeklyTest();
+            } else if (tabId === 'general-knowledge') {
+                renderGeneralKnowledge();
+            } else if (tabId === 'admin') {
+                checkAdminStatus();
+            }
+        }
+        
+        // --- Admin Functions ---
+        function checkAdminStatus() {
+            const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+            
+            if (isAdminLoggedIn) {
+                document.getElementById('adminLoginForm').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                
+                // Set initial values for quiz configs
+                document.getElementById('weeklyTestTotalMarks').value = weeklyQuizData.totalMarks;
+                document.getElementById('weeklyTestTotalQuestions').value = weeklyQuizData.questions.length;
+
+                document.getElementById('gkTestTotalMarks').value = gkQuizData.totalMarks; 
+                document.getElementById('gkTestTotalQuestions').value = gkQuizData.questions.length;
+
+                renderAdminRoutines();
+                renderAdminGoals();
+                renderAdminWeeklyQuestions();
+                renderAdminGKQuestions(); 
+            } else {
+                document.getElementById('adminLoginForm').style.display = 'block';
+                document.getElementById('adminContent').style.display = 'none';
+            }
+        }
+
+        function adminLogin() {
+            const id = document.getElementById('adminId').value;
+            const pass = document.getElementById('adminPassword').value;
+            
+            if (id === ADMIN_ID && pass === ADMIN_PASS) {
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                alert('Admin প্যানেলে সফলভাবে লগইন করা হয়েছে!');
+                checkAdminStatus();
+            } else {
+                alert('ভুল ইউজার আইডি বা পাসওয়ার্ড!');
+            }
+        }
+
+        // --- Routine Admin (Same as before) ---
+        function renderAdminRoutines() {
+            const list = document.getElementById('currentRoutinesList');
+            list.innerHTML = '';
+            
+            if (routineData.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #777; margin-top: 10px;">কোনো রুটিন যুক্ত করা হয়নি।</p>';
+                return;
+            }
+
+            routineData.forEach((routine, index) => {
+                const item = document.createElement('div');
+                item.className = 'current-list-item';
+                item.innerHTML = `
+                    <div class="item-text">
+                        <strong>${routine.time}</strong>: ${routine.activity} (${routine.goal})
+                    </div>
+                    <button class="btn-delete" data-index="${index}" onclick="deleteRoutine(this)">মুছে ফেলুন</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addRoutine(e) {
+            e.preventDefault();
+            const time = document.getElementById('routineTime').value;
+            const activity = document.getElementById('routineActivity').value;
+            const goal = document.getElementById('routineGoal').value;
+            
+            routineData.push({ time, activity, goal });
+            saveRoutineData();
+            
+            alert('নতুন রুটিন সফলভাবে যোগ করা হয়েছে!');
+            document.getElementById('addRoutineForm').reset();
+            renderAdminRoutines(); 
+            updatePlanner(); 
+        }
+
+        function deleteRoutine(button) {
+            const index = parseInt(button.dataset.index);
+            routineData.splice(index, 1);
+            saveRoutineData();
+            alert('রুটিন মুছে ফেলা হয়েছে!');
+            renderAdminRoutines();
+            updatePlanner();
+        }
+
+        function clearRoutines() {
+             if (confirm("আপনি কি সত্যিই মাসিক প্ল্যানারের সমস্ত রুটিন মুছে ফেলতে চান?")) {
+                routineData = [];
+                saveRoutineData();
+                alert('সমস্ত রুটিন মুছে ফেলা হয়েছে।');
+                renderAdminRoutines();
+                updatePlanner();
+            }
+        }
+        
+        // --- Goals Admin (Same as before) ---
+        function renderAdminGoals() {
+            const list = document.getElementById('currentGoalsList');
+            list.innerHTML = '';
+            
+            if (goalsData.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #777; margin-top: 10px;">কোনো লক্ষ্য যুক্ত করা হয়নি।</p>';
+                return;
+            }
+
+            goalsData.forEach((goal, index) => {
+                const item = document.createElement('div');
+                item.className = 'current-list-item';
+                item.innerHTML = `
+                    <div class="item-text">
+                        <strong>${goal.title}</strong>: ${goal.description.substring(0, 50)}...
+                    </div>
+                    <button class="btn-delete" data-index="${index}" onclick="deleteGoal(this)">মুছে ফেলুন</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addGoal(e) {
+            e.preventDefault();
+            const title = document.getElementById('goalTitle').value;
+            const description = document.getElementById('goalDescription').value;
+            
+            goalsData.push({ title, description });
+            saveGoalsData();
+            
+            alert('সাপ্তাহিক লক্ষ্য সফলভাবে যোগ করা হয়েছে!');
+            document.getElementById('addGoalForm').reset();
+            renderAdminGoals();
+            renderGoals(); 
+        }
+
+        function deleteGoal(button) {
+            const index = parseInt(button.dataset.index);
+            goalsData.splice(index, 1);
+            saveGoalsData();
+            alert('লক্ষ্য মুছে ফেলা হয়েছে!');
+            renderAdminGoals();
+            renderGoals();
+        }
+        
+        function clearGoals() {
+             if (confirm("আপনি কি সত্যিই সমস্ত লক্ষ্য মুছে ফেলতে চান?")) {
+                goalsData = [];
+                saveGoalsData();
+                alert('সমস্ত লক্ষ্য মুছে ফেলা হয়েছে।');
+                renderAdminGoals();
+                renderGoals();
+            }
+        }
+
+        // --- Weekly Test Admin & User Functions (Improved) ---
+        function renderAdminWeeklyQuestions() {
+            const list = document.getElementById('currentWeeklyQuestionsList');
+            list.innerHTML = '';
+            
+            if (weeklyQuizData.questions.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #777; margin-top: 10px;">কোনো প্রশ্ন যুক্ত করা হয়নি।</p>';
+                return;
+            }
+
+            weeklyQuizData.questions.forEach((q, index) => {
+                const item = document.createElement('div');
+                item.className = 'current-list-item';
+                item.innerHTML = `
+                    <div class="item-text">
+                        <strong>${index + 1}.</strong> ${q.questionText.substring(0, 50)}... 
+                        <span style="color: #2ecc71;">(Ans: ${q.correctAnswer.toUpperCase()})</span>
+                    </div>
+                    <button class="btn-delete" data-index="${index}" onclick="deleteWeeklyQuestion(this)">মুছে ফেলুন</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        function updateWeeklyTestMarks() {
+            weeklyQuizData.totalMarks = parseInt(document.getElementById('weeklyTestTotalMarks').value) || 0;
+            saveWeeklyQuizData();
+            // Also update the display in the user view if they switch to it
+            document.getElementById('displayWeeklyTotalMarks').textContent = weeklyQuizData.totalMarks;
+        }
+
+        function addWeeklyQuestion(e) {
+            e.preventDefault();
+            
+            const form = document.getElementById('addWeeklyQuestionForm');
+            const questionText = document.getElementById('weeklyQuestionText').value;
+            const options = {
+                a: form.elements['weeklyOptionA'].value,
+                b: form.elements['weeklyOptionB'].value,
+                c: form.elements['weeklyOptionC'].value,
+                d: form.elements['weeklyOptionD'].value,
+            };
+            const correctAnswer = form.elements['weeklyCorrectAnswer'].value;
+            
+            weeklyQuizData.questions.push({ questionText, options, correctAnswer });
+            saveWeeklyQuizData();
+            
+            document.getElementById('weeklyTestTotalQuestions').value = weeklyQuizData.questions.length;
+            alert('নতুন প্রশ্ন সফলভাবে যোগ করা হয়েছে! বর্তমান প্রশ্ন সংখ্যা: ' + weeklyQuizData.questions.length);
+            
+            form.reset();
+            form.elements['weeklyCorrectAnswer'][0].checked = true; 
+            renderAdminWeeklyQuestions();
+        }
+
+        function deleteWeeklyQuestion(button) {
+            const index = parseInt(button.dataset.index);
+            weeklyQuizData.questions.splice(index, 1);
+            saveWeeklyQuizData();
+            document.getElementById('weeklyTestTotalQuestions').value = weeklyQuizData.questions.length;
+            alert('প্রশ্ন মুছে ফেলা হয়েছে!');
+            renderAdminWeeklyQuestions();
+            renderWeeklyTest();
+        }
+
+
+        function clearWeeklyQuestions() {
+            if (confirm("আপনি কি সত্যিই সাপ্তাহিক পরীক্ষার সমস্ত প্রশ্ন মুছে ফেলতে চান?")) {
+                weeklyQuizData.questions = [];
+                saveWeeklyQuizData();
+                document.getElementById('weeklyTestTotalQuestions').value = 0;
+                alert('সমস্ত প্রশ্ন মুছে ফেলা হয়েছে।');
+                renderAdminWeeklyQuestions();
+                renderWeeklyTest();
+            }
+        }
+        
+        function renderWeeklyTest() {
+            const questionsContainer = document.getElementById('weeklyQuestionsContainer');
+            const submitBtn = document.getElementById('submitWeeklyTestBtn');
+            const testResults = document.getElementById('weeklyTestResults');
+            
+            questionsContainer.innerHTML = ''; 
+            testResults.style.display = 'none'; 
+            
+            document.getElementById('displayWeeklyTotalMarks').textContent = weeklyQuizData.totalMarks;
+            document.getElementById('displayWeeklyTotalQuestions').textContent = weeklyQuizData.questions.length;
+
+            if (weeklyQuizData.questions.length === 0) {
+                questionsContainer.innerHTML = '<p style="text-align: center; color: #777;">Admin প্যানেল থেকে প্রশ্ন যুক্ত করুন।</p>';
+                submitBtn.style.display = 'none';
+                return;
+            }
+
+            weeklyQuizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'test-question';
+                
+                let optionsHtml = '';
+                const optionKeys = ['a', 'b', 'c', 'd'];
+                
+                optionKeys.forEach(key => {
+                    if (q.options[key]) {
+                        optionsHtml += `
+                            <div class="option">
+                                <input type="radio" name="wq${index + 1}" value="${key}" id="wq${index + 1}-${key}" required>
+                                <label for="wq${index + 1}-${key}">${key.toUpperCase()}. ${q.options[key]}</label>
+                            </div>
+                        `;
+                    }
+                });
+
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.questionText}</div>
+                    <div class="options">${optionsHtml}</div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            submitBtn.style.display = 'block';
+            document.getElementById('weekly-test-form').querySelectorAll('input, button').forEach(el => el.disabled = false);
+
+        }
+
+        function submitWeeklyTest(e) {
+            e.preventDefault();
+            
+            let score = 0;
+            const totalQuestions = weeklyQuizData.questions.length;
+            const totalMarks = weeklyQuizData.totalMarks;
+            const marksPerQuestion = totalQuestions > 0 ? totalMarks / totalQuestions : 0;
+            
+            if (totalQuestions === 0) {
+                alert("পরীক্ষার প্রশ্ন যুক্ত করা নেই।");
+                return;
+            }
+            
+            weeklyQuizData.questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="wq${index + 1}"]:checked`);
+                if (selectedOption && selectedOption.value === q.correctAnswer) {
+                    score += marksPerQuestion;
+                }
+            });
+
+            const finalScore = Math.round(score);
+            const scoreDisplay = document.getElementById('weeklyScoreDisplay');
+            const feedback = document.getElementById('weeklyFeedback');
+            const testResults = document.getElementById('weeklyTestResults');
+            
+            scoreDisplay.textContent = `আপনি মোট ${totalMarks} নম্বরের মধ্যে ${finalScore} নম্বর পেয়েছেন।`;
+            
+            if (finalScore === totalMarks && totalMarks > 0) {
+                feedback.textContent = "অভিনন্দন! আপনি সব প্রশ্নের সঠিক উত্তর দিয়েছেন।";
+                feedback.style.color = "#2e7d32";
+            } else if (finalScore >= (totalMarks / 2)) {
+                feedback.textContent = "খুব ভালো! আরও একটু চেষ্টা করলে আপনি আরও ভালো করতে পারবেন।";
+                feedback.style.color = "#f57c00";
+            } else {
+                feedback.textContent = "চিন্তার কিছু নেই! আবার চেষ্টা করুন এবং আরও পড়াশোনা করুন।";
+                feedback.style.color = "#d32f2f";
+            }
+            
+            testResults.style.display = 'block';
+            
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `weekly-test-results-${year}-${month}`
+            localStorage.setItem(storageKey, JSON.stringify({ score: finalScore, total: totalMarks, date: new Date().toLocaleDateString('bn-BD') }));
+            
+            document.getElementById('weekly-test-form').querySelectorAll('input, button').forEach(el => el.disabled = true);
+        }
+
+        // --- General Knowledge Test Admin & User Functions (Improved) ---
+
+        function renderAdminGKQuestions() {
+            const list = document.getElementById('currentGKQuestionsList');
+            list.innerHTML = '';
+            
+            if (gkQuizData.questions.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #777; margin-top: 10px;">কোনো প্রশ্ন যুক্ত করা হয়নি।</p>';
+                return;
+            }
+
+            gkQuizData.questions.forEach((q, index) => {
+                const item = document.createElement('div');
+                item.className = 'current-list-item';
+                item.innerHTML = `
+                    <div class="item-text">
+                        <strong>${index + 1}.</strong> ${q.questionText.substring(0, 50)}... 
+                        <span style="color: #2ecc71;">(Ans: ${q.correctAnswer.toUpperCase()})</span>
+                    </div>
+                    <button class="btn-delete" data-index="${index}" onclick="deleteGKQuestion(this)">মুছে ফেলুন</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        function updateGKTestMarks() {
+            gkQuizData.totalMarks = parseInt(document.getElementById('gkTestTotalMarks').value) || 0;
+            saveGKQuizData();
+            document.getElementById('displayGKTotalMarks').textContent = gkQuizData.totalMarks;
+        }
+
+        function addGKQuestion(e) {
+            e.preventDefault();
+            
+            const form = document.getElementById('addGKQuestionForm');
+            const questionText = document.getElementById('gkQuestionText').value;
+            const options = {
+                a: form.elements['gkOptionA'].value,
+                b: form.elements['gkOptionB'].value,
+                c: form.elements['gkOptionC'].value,
+                d: form.elements['gkOptionD'].value,
+            };
+            const correctAnswer = form.elements['gkCorrectAnswer'].value;
+            
+            gkQuizData.questions.push({ questionText, options, correctAnswer });
+            saveGKQuizData();
+            
+            document.getElementById('gkTestTotalQuestions').value = gkQuizData.questions.length;
+            alert('নতুন সাধারণ জ্ঞান প্রশ্ন সফলভাবে যোগ করা হয়েছে! বর্তমান প্রশ্ন সংখ্যা: ' + gkQuizData.questions.length);
+            
+            form.reset();
+            form.elements['gkCorrectAnswer'][0].checked = true; 
+            renderAdminGKQuestions();
+        }
+
+        function deleteGKQuestion(button) {
+            const index = parseInt(button.dataset.index);
+            gkQuizData.questions.splice(index, 1);
+            saveGKQuizData();
+            document.getElementById('gkTestTotalQuestions').value = gkQuizData.questions.length;
+            alert('সাধারণ জ্ঞান প্রশ্ন মুছে ফেলা হয়েছে!');
+            renderAdminGKQuestions();
+            renderGeneralKnowledge();
+        }
+
+
+        function clearGKQuestions() {
+            if (confirm("আপনি কি সত্যিই সমস্ত সাধারণ জ্ঞান প্রশ্ন মুছে ফেলতে চান?")) {
+                gkQuizData.questions = [];
+                saveGKQuizData();
+                document.getElementById('gkTestTotalQuestions').value = 0;
+                alert('সমস্ত সাধারণ জ্ঞান প্রশ্ন মুছে ফেলা হয়েছে।');
+                renderAdminGKQuestions();
+                renderGeneralKnowledge();
+            }
+        }
+        
+        function renderGeneralKnowledge() {
+            const questionsContainer = document.getElementById('gkQuestionsContainer');
+            const submitBtn = document.getElementById('submitGKTestBtn');
+            const testResults = document.getElementById('gkTestResults');
+            
+            questionsContainer.innerHTML = ''; 
+            testResults.style.display = 'none'; 
+            
+            document.getElementById('displayGKTotalMarks').textContent = gkQuizData.totalMarks;
+            document.getElementById('displayGKTotalQuestions').textContent = gkQuizData.questions.length;
+
+            if (gkQuizData.questions.length === 0) {
+                questionsContainer.innerHTML = '<p style="text-align: center; color: #777;">Admin প্যানেল থেকে সাধারণ জ্ঞানের প্রশ্ন যুক্ত করুন।</p>';
+                submitBtn.style.display = 'none';
+                return;
+            }
+
+            gkQuizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'test-question';
+                
+                let optionsHtml = '';
+                const optionKeys = ['a', 'b', 'c', 'd'];
+                
+                optionKeys.forEach(key => {
+                    if (q.options[key]) {
+                        optionsHtml += `
+                            <div class="option">
+                                <input type="radio" name="gk${index + 1}" value="${key}" id="gk${index + 1}-${key}" required>
+                                <label for="gk${index + 1}-${key}">${key.toUpperCase()}. ${q.options[key]}</label>
+                            </div>
+                        `;
+                    }
+                });
+
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.questionText}</div>
+                    <div class="options">${optionsHtml}</div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            submitBtn.style.display = 'block';
+            document.getElementById('gk-test-form').querySelectorAll('input, button').forEach(el => el.disabled = false);
+
+        }
+
+        function submitGKTest(e) {
+            e.preventDefault();
+            
+            let score = 0;
+            const totalQuestions = gkQuizData.questions.length;
+            const totalMarks = gkQuizData.totalMarks;
+            const marksPerQuestion = totalQuestions > 0 ? totalMarks / totalQuestions : 0;
+            
+            if (totalQuestions === 0) {
+                alert("সাধারণ জ্ঞানের প্রশ্ন যুক্ত করা নেই।");
+                return;
+            }
+            
+            gkQuizData.questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="gk${index + 1}"]:checked`);
+                if (selectedOption && selectedOption.value === q.correctAnswer) {
+                    score += marksPerQuestion;
+                }
+            });
+
+            const finalScore = Math.round(score);
+            const scoreDisplay = document.getElementById('gkScoreDisplay');
+            const feedback = document.getElementById('gkFeedback');
+            const testResults = document.getElementById('gkTestResults');
+            
+            scoreDisplay.textContent = `আপনি মোট ${totalMarks} নম্বরের মধ্যে ${finalScore} নম্বর পেয়েছেন।`;
+            
+            if (finalScore === totalMarks && totalMarks > 0) {
+                feedback.textContent = "অসাধারণ! আপনি সাধারণ জ্ঞানের সব প্রশ্নের সঠিক উত্তর দিয়েছেন।";
+                feedback.style.color = "#2e7d32";
+            } else if (finalScore >= (totalMarks / 2)) {
+                feedback.textContent = "খুব ভালো! আপনার সাধারণ জ্ঞান বেশ শক্তিশালী।";
+                feedback.style.color = "#f57c00";
+            } else {
+                feedback.textContent = "চিন্তার কিছু নেই! আরও বেশি সাধারণ জ্ঞান চর্চা করুন।";
+                feedback.style.color = "#d32f2f";
+            }
+            
+            testResults.style.display = 'block';
+            
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `gk-test-results-${year}-${month}`
+            localStorage.setItem(storageKey, JSON.stringify({ score: finalScore, total: totalMarks, date: new Date().toLocaleDateString('bn-BD') }));
+            
+            document.getElementById('gk-test-form').querySelectorAll('input, button').forEach(el => el.disabled = true);
+        }
+
+        // --- Monthly Planner Functions (Year Select Extended) ---
+        function initializePlanner() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+            
+            // Populate years: Current year - 5 to Current year + 10
+            const startYear = currentYear - 5;
+            const endYear = currentYear + 10;
+            
+            for (let i = startYear; i <= endYear; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+            
+            const currentDate = new Date();
+            document.getElementById('monthSelect').value = currentDate.getMonth();
+            document.getElementById('yearSelect').value = currentDate.getFullYear();
+            
+            updatePlanner();
+        }
+        
+        function updatePlanner() {
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const tableHeader = document.querySelector('#plannerTable thead tr');
+            while (tableHeader.children.length > 3) {
+                tableHeader.removeChild(tableHeader.lastChild);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const th = document.createElement('th');
+                th.className = 'days-column';
+                th.textContent = day;
+                
+                const dayOfWeek = new Date(year, month, day).getDay();
+                if (dayOfWeek === 5 || dayOfWeek === 6) { 
+                    th.classList.add('weekend');
+                }
+                
+                tableHeader.appendChild(th);
+            }
+            
+            const tableBody = document.querySelector('#plannerTable tbody');
+            tableBody.innerHTML = '';
+            
+            if (routineData.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="30" style="text-align: center; color: #777;">Admin প্যানেল থেকে রুটিন যোগ করুন।</td></tr>';
+                 loadCheckboxes(); 
+                 updateStats();
+                 return;
+            }
+
+            routineData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                const timeCell = document.createElement('td');
+                timeCell.className = 'time-column';
+                timeCell.textContent = item.time;
+                row.appendChild(timeCell);
+                
+                const activityCell = document.createElement('td');
+                activityCell.className = 'activity-column';
+                activityCell.textContent = item.activity;
+                row.appendChild(activityCell);
+                
+                const goalCell = document.createElement('td');
+                goalCell.className = 'goal-column';
+                goalCell.textContent = item.goal;
+                row.appendChild(goalCell);
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('td');
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.dataset.day = day;
+                    checkbox.dataset.activity = index;
+                    
+                    const dayOfWeek = new Date(year, month, day).getDay();
+                    if (dayOfWeek === 5 || dayOfWeek === 6) {
+                        dayCell.classList.add('weekend');
+                    }
+                    
+                    checkbox.addEventListener('change', function() {
+                        updateStats(); 
+                        updateCellBackground(this); 
+                    });
+                    
+                    dayCell.appendChild(checkbox);
+                    row.appendChild(dayCell);
+                }
+                
+                tableBody.appendChild(row);
+            });
+            
+            loadCheckboxes();
+            updateStats();
+        }
+        
+        function updateCellBackground(checkbox) {
+            const cell = checkbox.parentElement;
+            cell.classList.remove('completed', 'missed');
+            
+            const day = parseInt(checkbox.dataset.day);
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+
+            if (checkbox.checked) {
+                cell.classList.add('completed');
+            } else {
+                const currentDate = new Date();
+                const currentDay = currentDate.getDate();
+                const currentMonth = currentDate.getMonth();
+                const currentYear = currentDate.getFullYear();
+                
+                if (year < currentYear || 
+                    (year == currentYear && month < currentMonth) ||
+                    (year == currentYear && month == currentMonth && day < currentDay)) {
+                    cell.classList.add('missed');
+                }
+            }
+        }
+        
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const completedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const currentDate = new Date();
+            const currentDay = currentDate.getDate();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            let daysLeft = 0;
+            if (year === currentYear && month === currentMonth) {
+                daysLeft = daysInMonth - currentDay;
+            } else if (year > currentYear || (year === currentYear && month > currentMonth)) {
+                daysLeft = daysInMonth;
+            }
+            
+            document.getElementById('completedTasks').textContent = completedCheckboxes.length;
+            document.getElementById('completionRate').textContent = 
+                checkboxes.length > 0 ? Math.round((completedCheckboxes.length / checkboxes.length) * 100) + '%' : '0%';
+            document.getElementById('daysLeft').textContent = daysLeft;
+            
+            saveCheckboxes();
+        }
+        
+        function saveCheckboxes() {
+            const checkboxes = document.querySelectorAll('#plannerTable input[type="checkbox"]');
+            const checkboxState = {};
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const key = `${checkbox.dataset.activity}-${checkbox.dataset.day}`;
+                    checkboxState[key] = true;
+                }
+            });
+            
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `planner-${year}-${month}`;
+            
+            localStorage.setItem(storageKey, JSON.stringify(checkboxState));
+        }
+        
+        function loadCheckboxes() {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `planner-${year}-${month}`;
+            const savedState = localStorage.getItem(storageKey);
+            
+            if (savedState) {
+                const checkboxState = JSON.parse(savedState);
+                // Need to use a slight delay to ensure dynamic rows are rendered before loading state
+                setTimeout(() => {
+                    const checkboxes = document.querySelectorAll('#plannerTable input[type="checkbox"]');
+                    
+                    checkboxes.forEach(checkbox => {
+                        const key = `${checkbox.dataset.activity}-${checkbox.dataset.day}`;
+                        checkbox.checked = checkboxState[key] || false;
+                        
+                        updateCellBackground(checkbox);
+                    });
+                }, 50); // Small delay to ensure DOM is ready
+            }
+        }
+        
+        function saveNotes() {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `planner-notes-${year}-${month}`;
+            const notes = document.getElementById('weeklyNotes').value;
+            
+            localStorage.setItem(storageKey, notes);
+        }
+        
+        function loadNotes() {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const storageKey = `planner-notes-${year}-${month}`;
+            const savedNotes = localStorage.getItem(storageKey);
+            
+            document.getElementById('weeklyNotes').value = savedNotes || '';
+        }
+        
+        function loadSavedData() {
+            // Load initial data on startup, the rest will load when tabs are clicked
+            loadCheckboxes();
+            loadNotes();
+        }
+        
+        function resetPlanner() {
+            if (confirm('আপনি কি নিশ্চিত যে আপনি এই মাসের সমস্ত ডেটা রিসেট করতে চান?')) {
+                const month = document.getElementById('monthSelect').value;
+                const year = document.getElementById('yearSelect').value;
+                const storageKey = `planner-${year}-${month}`;
+                const notesKey = `planner-notes-${year}-${month}`;
+                
+                localStorage.removeItem(storageKey);
+                localStorage.removeItem(notesKey);
+                
+                updatePlanner(); 
+                alert('প্ল্যানার রিসেট করা হয়েছে!');
+            }
+        }
+        
+        function printPlanner() {
+            window.print();
+        }
+        
+        // --- Weekly Goals Display Function ---
+
+        function renderGoals() {
+            const goalsList = document.getElementById('goalsList');
+            goalsList.innerHTML = ''; 
+
+            if (goalsData.length === 0) {
+                goalsList.innerHTML = '<p style="text-align: center; color: #777;">Admin প্যানেল থেকে লক্ষ্য যুক্ত করুন।</p>';
+                return;
+            }
+
+            goalsData.forEach(goal => {
+                const goalItem = document.createElement('div');
+                goalItem.className = 'goal-item';
+                goalItem.innerHTML = `
+                    <div class="goal-title">${goal.title}</div>
+                    <div class="goal-description">${goal.description.replace(/\n/g, '<br>')}</div>
+                `;
+                goalsList.appendChild(goalItem);
+            });
+        }
+    </script>
+</body>
+</html>
